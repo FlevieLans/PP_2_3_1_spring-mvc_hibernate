@@ -20,7 +20,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = "app")
 public class HibernateConfig {
 
-    private Environment environment;
+    private final Environment environment;
 
     @Autowired
     public HibernateConfig(Environment environment) { this.environment = environment; }

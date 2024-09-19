@@ -1,6 +1,10 @@
 package app.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Table(name = "users")
@@ -11,12 +15,15 @@ public class User {
     @Column(name = "id")
     private int id;
 
+    @Pattern(regexp = "^[A-Z[А-ЯЁ]][a-z[а-яё]]{1,15}", message = "Name is incorrect. Example: Иван / Ivan")
     @Column(name = "name")
     private String name;
 
+    @Pattern(regexp = "^[A-Z[А-ЯЁ]][a-z[а-яё]]{1,30}", message = "Surname is incorrect. Example: Иванов / Ivanov")
     @Column(name = "surname")
     private String surname;
 
+    @Range(min = 0, max = 100, message = "Age is incorrect. Use range from 0 to 100.")
     @Column(name = "age")
     private int age;
 

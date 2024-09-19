@@ -1,53 +1,59 @@
 package app.controller;
 
 import app.entity.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import app.service.UserService;
-
-import java.util.List;
 
 @Controller
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+
 
     @Autowired
     public UserController(UserService userService) { this.userService = userService; }
 
 
+    @ModelAttribute("newUser")
+    public User getPerson() { return new User(); }
+
     @GetMapping("/")
-    public String showAllUsers(Model model) {
-        List<User> allUsers = userService.getAllUsers();
-        model.addAttribute("allUsers", allUsers);
-        return "users";
+    public String showAllUsers(Model model){
+        model.addAttribute("allUsers", userService.getAllUsers());
+        return "index";
     }
 
-    @GetMapping("/addNewUser")
-    public String addNewUser(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-        return "user_info";
-    }
-
-    @PostMapping("/saveUser")
-    public String saveUser(@ModelAttribute("user") User user) {
+    @PostMapping("/")
+    public String addNewUser(@ModelAttribute("newUser") @Valid User user, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()){
+            model.addAttribute("allUsers", userService.getAllUsers());
+            return "index";
+        }
         userService.saveUser(user);
         return "redirect:/";
     }
 
-    @GetMapping("/updateInfo")
-    public String updateUser(@RequestParam("userId") int id, Model model) {
-        User user = userService.getUser(id);
-        model.addAttribute("user", user);
-        return "user_info";
+    @PostMapping("/{id}/delete")
+    public String deleteUser(@ModelAttribute("id") int id) {
+        userService.deleteUser(id);
+        return "redirect:/";
     }
 
-    @GetMapping("/deleteUser")
-    public String deleteUser(@RequestParam("userId") int id) {
-        userService.deleteUser(id);
+    @GetMapping("/{id}/edit")
+    public String editUser(@ModelAttribute("id") int id, Model model) {
+        model.addAttribute("user", userService.getUser(id));
+        return "edit";
+    }
+
+    @PostMapping("/{id}")
+    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) { return "edit"; }
+        userService.saveUser(user);
         return "redirect:/";
     }
 

@@ -2,23 +2,25 @@ package app.service;
 
 import app.dao.UserDAO;
 import app.entity.User;
-import jakarta.transaction.Transactional;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO) { this.userDAO = userDAO; }
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<User> getAllUsers() {
         return userDAO.getAllUsers();
     }
@@ -30,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public User getUser(int id) {
         return userDAO.getUser(id);
     }
